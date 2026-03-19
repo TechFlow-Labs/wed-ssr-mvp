@@ -1,0 +1,9 @@
+services:
+  web:
+    build: .
+    ports:
+      - "3000:3000"
+    environment:
+      # URL του backend API — από τον browser του χρήστη (όχι localhost του container)
+      # π.χ. http://host.docker.internal:8060 αν το API τρέχει στο host (macOS/Windows)
+      NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://localhost:8060}

@@ -1,0 +1,29 @@
+# Dependencies & build output
+node_modules
+.next
+out
+
+# Git & editor
+.git
+.gitignore
+.cursor
+*.md
+
+# Env & local secrets (pass at runtime / compose)
+.env
+.env.*
+!.env.example
+
+# Tests & tooling
+coverage
+.nyc_output
+*.log
+npm-debug.log*
+
+# OS
+.DS_Store
+
+# Docker
+Dockerfile*
+docker-compose*.yml
+.dockerignore
