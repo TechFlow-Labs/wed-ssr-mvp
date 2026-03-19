@@ -1,0 +1,18 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Jost:wght@300;400;500;600&display=swap');
+
+:root {
+  --ivory: #FAF8F5;
+  --champagne: #F5EDE4;
+  --blush: #E8DED4;
+  --rose: #C9A9A0;
+  --sage: #9CAF88;
+  --charcoal: #3D3D3D;
+}
+
+body {
+  @apply font-sans text-charcoal bg-ivory;
+}
