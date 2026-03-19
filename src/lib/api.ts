@@ -1,5 +1,16 @@
-export const API_BASE_URL =
-  process.env.NEXT_PUBLIC_API_URL || "http://localhost:8060";
+const DEFAULT_API = "http://localhost:8060";
+
+/** API origin for the current runtime: browser uses public URL; Node (SSR) can use a container-to-host URL. */
+export function getApiBaseUrl(): string {
+  if (typeof window !== "undefined") {
+    return process.env.NEXT_PUBLIC_API_URL || DEFAULT_API;
+  }
+  return (
+    process.env.API_INTERNAL_URL ||
+    process.env.NEXT_PUBLIC_API_URL ||
+    DEFAULT_API
+  );
+}
 
 export type VendorPublic = {
   partner_id: string;
@@ -42,7 +53,7 @@ export async function fetchVendors(
   limit = 50,
   skip = 0
 ): Promise<VendorListResponse> {
-  const url = new URL(`${API_BASE_URL}/vendors/`);
+  const url = new URL(`${getApiBaseUrl()}/vendors/`);
   url.searchParams.set("limit", String(limit));
   url.searchParams.set("skip", String(skip));
 
@@ -54,7 +65,7 @@ export async function fetchVendors(
 export async function createGuestReservation(
   data: ReservationGuestRequest
 ): Promise<ReservationItemResponse> {
-  const res = await fetch(`${API_BASE_URL}/reservations/guest`, {
+  const res = await fetch(`${getApiBaseUrl()}/reservations/guest`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(data),

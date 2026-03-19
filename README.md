@@ -72,16 +72,21 @@ npm start
 # Εικόνα
 docker build -t wedding-planner .
 
-# Εκτέλεση
+# Εκτέλεση (API στο host, πρόσβαση από browser στο localhost:8060)
 docker run --rm -p 3000:3000 \
-  -e NEXT_PUBLIC_API_URL=http://host.docker.internal:8060 \
+  --add-host=host.docker.internal:host-gateway \
+  -e API_INTERNAL_URL=http://host.docker.internal:8060 \
+  -e NEXT_PUBLIC_API_URL=http://localhost:8060 \
   wedding-planner
 ```
 
-Με Compose (ίδιες μεταβλητές περιβάλλοντος· προαιρετικά `.env` δίπλα στο `docker-compose.yml`):
+Με Compose (προαιρετικά `.env` δίπλα στο `docker-compose.yml`):
 
 ```bash
-NEXT_PUBLIC_API_URL=http://host.docker.internal:8060 docker compose up --build
+docker compose up --build
 ```
 
-Το `NEXT_PUBLIC_API_URL` είναι η διεύθυνση που βλέπει ο **browser** (και ο server για SSR) για το backend· μέσα στο container το `localhost` δείχνει στο ίδιο το container, όχι στο μηχάνημά σας — γι’ αυτό σε Mac/Windows χρησιμοποιείται συχνά `host.docker.internal` για API που τρέχει στο host.
+- **`API_INTERNAL_URL`** — χρησιμοποιείται μόνο από τον **Node server** (SSR, `fetch` στο container) για να φτάσει το API που τρέχει στο **host**. Το `localhost` μέσα στο container δεν είναι το μηχάνημά σας.
+- **`NEXT_PUBLIC_API_URL`** — διεύθυνση που βλέπει ο **browser** (π.χ. αιτήματα από τη φόρμα)· όταν ανοίγεις `http://localhost:3000`, συνήθως το API είναι `http://localhost:8060`.
+
+Αν το API είναι άλλο container στο ίδιο compose, βάλε π.χ. `API_INTERNAL_URL=http://api:8060` (όνομα υπηρεσίας) και `NEXT_PUBLIC_API_URL` όπως πρέπει να το βλέπει ο χρήστης από έξω.

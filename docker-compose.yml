@@ -3,7 +3,11 @@ services:
     build: .
     ports:
       - "3000:3000"
+    extra_hosts:
+      # Linux: ώστε το host.docker.internal να δείχνει στο μηχάνημα host (API εκτός compose)
+      - "host.docker.internal:host-gateway"
     environment:
-      # URL του backend API — από τον browser του χρήστη (όχι localhost του container)
-      # π.χ. http://host.docker.internal:8060 αν το API τρέχει στο host (macOS/Windows)
+      # SSR μέσα στο container → host όπου τρέχει το API (όχι localhost του container)
+      API_INTERNAL_URL: ${API_INTERNAL_URL:-http://host.docker.internal:8060}
+      # Browser (φόρμα κράτησης κ.λπ.) — συνήθως localhost όταν ανοίγεις http://localhost:3000
       NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://localhost:8060}

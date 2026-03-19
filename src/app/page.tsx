@@ -155,16 +155,10 @@ export default function HomePage() {
           <h2 className="font-display text-4xl md:text-5xl mb-6">
             Έτοιμοι για το όνειρό σας;
           </h2>
-          <p className="text-white/80 text-lg mb-10">
+          <p className="text-white/80 text-lg">
             Εξερευνήστε την επιλεγμένη νυφική μας συλλογή — νυφικά, παπούτσια,
             κοσμήματα, πέπλα και πολλά άλλα.
           </p>
-          <Link
-            href="/shop"
-            className="inline-block px-10 py-4 bg-white text-charcoal rounded-full font-medium hover:bg-rose-50 transition-colors"
-          >
-            Κατηγορίες
-          </Link>
         </div>
       </section>
     </main>
