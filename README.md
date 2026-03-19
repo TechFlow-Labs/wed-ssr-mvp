@@ -90,3 +90,38 @@ docker compose up --build
 - **`NEXT_PUBLIC_API_URL`** — διεύθυνση που βλέπει ο **browser** (π.χ. αιτήματα από τη φόρμα)· όταν ανοίγεις `http://localhost:3000`, συνήθως το API είναι `http://localhost:8060`.
 
 Αν το API είναι άλλο container στο ίδιο compose, βάλε π.χ. `API_INTERNAL_URL=http://api:8060` (όνομα υπηρεσίας) και `NEXT_PUBLIC_API_URL` όπως πρέπει να το βλέπει ο χρήστης από έξω.
+
+### Nginx reverse proxy + SSL (wedapp.gr)
+
+Το `docker-compose.yml` περιλαμβάνει τρεις υπηρεσίες: **`web`** (Next.js), **`nginx`** (reverse proxy στις 80/443) και **`certbot`** (ανανέωση πιστοποιητικών Let’s Encrypt).
+
+1. **DNS:** A record το `wedapp.gr` → δημόσια IP του server (όπου ακούουν οι θύρες 80 και 443).
+2. **Εκκίνηση:** `docker compose up -d --build`
+3. **Πρώτο πιστοποιητικό** (nginx πρέπει να τρέχει ώστε το HTTP challenge να σερβίρεται από `/var/www/certbot`):
+
+   ```bash
+   export CERTBOT_EMAIL=you@wedapp.gr
+   ./scripts/issue-ssl-cert.sh
+   ```
+
+   Ή χειροκίνητα:
+
+   ```bash
+   docker compose run --rm certbot certonly --webroot -w /var/www/certbot \
+     -d wedapp.gr --email you@wedapp.gr --agree-tos --no-eff-email
+   docker compose restart nginx
+   ```
+
+   Μετά το restart, το entrypoint του nginx ανιχνεύει τα αρχεία σε `/etc/letsencrypt/live/wedapp.gr/` και ενεργοποιεί HTTPS + ανακατεύθυνση HTTP→HTTPS.
+
+4. **Ανανέωση SSL:** το container `certbot` τρέχει `certbot renew` περιοδικά. Μετά από επιτυχημένη ανανέωση, φορτώστε ξανά το nginx ώστε να διαβάσει τα νέα αρχεία:
+
+   ```bash
+   docker compose exec nginx nginx -s reload
+   ```
+
+5. **Παραγωγή:** ορίστε `NEXT_PUBLIC_API_URL` στη δημόσια URL του API (π.χ. `https://api.wedapp.gr`) ώστε ο browser και τα client bundles να χτυπάνε το σωστό host.
+
+Για δοκιμές χωρίς nginx, ξεσχολιάστε στο `docker-compose.yml` το `ports: "3000:3000"` της υπηρεσίας `web`.
+
+**Σημείωση:** Τα αρχεία στο `nginx/templates/` χρησιμοποιούν `server_name wedapp.gr`. Για `www.wedapp.gr`, προσθέστε το στα `server_name`, στο `ssl_certificate` paths (αν χρησιμοποιείτε ξεχωριστό live directory) και στο `certonly` με επιπλέον `-d www.wedapp.gr`.
