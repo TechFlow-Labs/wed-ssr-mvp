@@ -29,6 +29,12 @@ export function Header() {
           >
             Προμηθευτές
           </Link>
+          <Link
+            href="/blog"
+            className="text-sm font-medium text-charcoal/80 hover:text-charcoal transition-colors"
+          >
+            Blog
+          </Link>
         </div>
       </nav>
     </header>

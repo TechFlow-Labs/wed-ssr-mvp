@@ -49,6 +49,16 @@ export type ReservationItemResponse = {
   budget_per_reservation?: string | null;
 };
 
+export type BlogPublic = {
+  id: string;
+  title: string;
+  content: string;
+  excerpt: string | null;
+  author_name: string;
+  created_at: string;
+  updated_at: string;
+};
+
 export async function fetchVendors(
   limit = 50,
   skip = 0
@@ -80,5 +90,26 @@ export async function createGuestReservation(
     );
   }
 
+  return res.json();
+}
+
+export async function fetchPublishedBlogs(): Promise<{
+  total: number;
+  items: BlogPublic[];
+}> {
+  const res = await fetch(`${getApiBaseUrl()}/blog/public/`, {
+    cache: "no-store",
+  });
+  if (!res.ok) throw new Error("Αποτυχία φόρτωσης άρθρων");
+  const items = (await res.json()) as BlogPublic[];
+  return { total: items.length, items };
+}
+
+export async function fetchBlogById(id: string): Promise<BlogPublic> {
+  const res = await fetch(
+    `${getApiBaseUrl()}/blog/public/${encodeURIComponent(id)}`,
+    { cache: "no-store" }
+  );
+  if (!res.ok) throw new Error("Αποτυχία φόρτωσης άρθρου");
   return res.json();
 }
