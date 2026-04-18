@@ -29,6 +29,12 @@ export function Header() {
           >
             Προμηθευτές
           </Link>
+          <a
+            href="https://main.wedapp.gr"
+            className="inline-flex items-center justify-center rounded-md border border-rose-400/50 bg-champagne/80 px-4 py-1.5 text-sm font-medium text-charcoal hover:border-rose-600 hover:bg-champagne transition-colors"
+          >
+            Σύνδεση
+          </a>
         </div>
       </nav>
     </header>

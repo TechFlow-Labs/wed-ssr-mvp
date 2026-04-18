@@ -12,10 +12,12 @@ services:
       API_INTERNAL_URL: ${API_INTERNAL_URL:-http://host.docker.internal:8060}
       NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://localhost:8060}
     networks:
-      - wedding
+      - local_sandbox_2
 
   nginx:
     build: ./nginx
+    environment:
+      WEDDING_API_NGINX_UPSTREAM: ${WEDDING_API_NGINX_UPSTREAM:-wedding-plan-nginx-prod:8050}
     ports:
       - "80:80"
       - "443:443"
@@ -25,7 +27,7 @@ services:
     depends_on:
       - web
     networks:
-      - wedding
+      - local_sandbox_2
 
   certbot:
     image: certbot/certbot:v2.11.0
@@ -34,7 +36,7 @@ services:
       - certbot-conf:/etc/letsencrypt
     entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew || true; sleep 12h & wait $${!}; done;'"
     networks:
-      - wedding
+      - local_sandbox_2
     depends_on:
       - nginx
 
@@ -42,5 +44,8 @@ volumes:
   certbot-www:
   certbot-conf:
 
+# Same bridge as wed-main-app / wed-backend (docker network create … local_sandbox_2)
 networks:
-  wedding:
+  local_sandbox_2:
+    external: true
+    name: local_sandbox_2

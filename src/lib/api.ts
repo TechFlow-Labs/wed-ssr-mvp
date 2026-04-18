@@ -1,13 +1,18 @@
 const DEFAULT_API = "http://localhost:8060";
 
-/** API origin for the current runtime: browser uses public URL; Node (SSR) can use a container-to-host URL. */
+/**
+ * Browser: same-origin `/public-api` (nginx or Next rewrites → backend) so wedapp.gr never calls localhost:8060.
+ * SSR: API_INTERNAL_URL / Docker network to the API container.
+ */
 export function getApiBaseUrl(): string {
   if (typeof window !== "undefined") {
-    return process.env.NEXT_PUBLIC_API_URL || DEFAULT_API;
+    const explicit = process.env.NEXT_PUBLIC_API_URL?.replace(/\/$/, "");
+    if (explicit) return explicit;
+    return `${window.location.origin}/public-api`;
   }
   return (
-    process.env.API_INTERNAL_URL ||
-    process.env.NEXT_PUBLIC_API_URL ||
+    process.env.API_INTERNAL_URL?.replace(/\/$/, "") ||
+    process.env.NEXT_PUBLIC_API_URL?.replace(/\/$/, "") ||
     DEFAULT_API
   );
 }

@@ -4,10 +4,11 @@
 set -eu
 EMAIL="${CERTBOT_EMAIL:?Ορίστε CERTBOT_EMAIL (π.χ. export CERTBOT_EMAIL=you@wedapp.gr)}"
 
-docker compose run --rm certbot certonly \
+docker compose run --rm --entrypoint "certbot" certbot certonly \
   --webroot \
   -w /var/www/certbot \
   -d wedapp.gr \
+  -d main.wedapp.gr \
   --email "$EMAIL" \
   --agree-tos \
   --no-eff-email
