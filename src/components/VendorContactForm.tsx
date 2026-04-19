@@ -2,6 +2,7 @@
 
 import { FormEvent, useState } from "react";
 import { createGuestReservation } from "@/lib/api";
+import { MultiDatePicker } from "@/components/MultiDatePicker";
 
 type VendorContactFormProps = {
   partnerId: string;
@@ -10,12 +11,44 @@ type VendorContactFormProps = {
 
 type SubmitState = "idle" | "loading" | "success" | "error";
 
+/** Labels for «Ενδιαφέρομαι για:» — order matches product spec. */
+const EVENT_TYPE_OPTIONS: string[] = [
+  "Δεξίωση γάμου",
+  "Δεξίωση βάπτισης",
+  "Παιδικό πάρτι",
+  "Σχολική εκδρομή",
+  "Χριστιανικός Γάμος",
+  "Πολιτικός Γάμος",
+  "Συμβολικός Γάμος",
+  "Αγγλικανικός Γάμος",
+  "Γάμος για ζευγάρια του ίδιου φύλου",
+  "Ανανέωση όρκων",
+  "Αθλητικές δραστηριότητες",
+  "Εταιρικές εκδηλώσεις",
+  "Πολιτιστικές εκδηλώσεις",
+  "Συναυλίες",
+  "Πάρτι γενεθλίων",
+  "Χορευτικές εκδηλώσεις",
+  "Παρουσιάσεις βιβλίων",
+  "Άλλο",
+];
+
+/** Integer guest count only — avoids `type="number"` float/spinner quirks and `Number("…e…")` edge cases. */
+function parsePositiveGuestCount(raw: string): number | null {
+  const digitsOnly = raw.replace(/\s/g, "").replace(/,/g, "");
+  if (!/^\d+$/.test(digitsOnly)) return null;
+  const n = Number.parseInt(digitsOnly, 10);
+  if (n < 1 || !Number.isSafeInteger(n)) return null;
+  return n;
+}
+
 export function VendorContactForm({
   partnerId,
   vendorName,
 }: VendorContactFormProps) {
   const [state, setState] = useState<SubmitState>("idle");
   const [message, setMessage] = useState("");
+  const [interestedDateISOs, setInterestedDateISOs] = useState<string[]>([]);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -26,12 +59,30 @@ export function VendorContactForm({
     const lastName = String(formData.get("lastName") || "").trim();
     const email = String(formData.get("email") || "").trim();
     const phone = String(formData.get("phone") || "").trim() || null;
-    const interestedDates = String(formData.get("interestedDates") || "").trim() || null;
+    const interestedDates =
+      interestedDateISOs.length > 0
+        ? interestedDateISOs.slice().sort().join(", ")
+        : null;
     const guestCountRaw = String(formData.get("guestCount") || "").trim();
+    const guestCount = parsePositiveGuestCount(guestCountRaw);
     const eventType = String(formData.get("eventType") || "").trim() || null;
     const budgetRaw = String(formData.get("budget") || "").trim();
     const details = String(formData.get("details") || "").trim() || null;
     const otherComments = String(formData.get("otherComments") || "").trim() || null;
+
+    if (!interestedDates) {
+      setState("error");
+      setMessage("Επιλέξτε τουλάχιστον μία ημερομηνία στο ημερολόγιο.");
+      return;
+    }
+
+    if (guestCount === null) {
+      setState("error");
+      setMessage(
+        "Δώστε έγκυρο αριθμό καλεσμένων (μόνο ψηφία, χωρίς κόμμα ή δεκαδικά)."
+      );
+      return;
+    }
 
     setState("loading");
     setMessage("");
@@ -47,7 +98,7 @@ export function VendorContactForm({
         budget_per_reservation: budgetRaw ? Number(budgetRaw) : null,
         partner_id: partnerId,
         interested_dates: interestedDates,
-        guest_count: guestCountRaw ? Number(guestCountRaw) : null,
+        guest_count: guestCount,
         event_type: eventType,
         other_comments: otherComments,
       });
@@ -57,6 +108,7 @@ export function VendorContactForm({
         `Το αίτημα κράτησης στάλθηκε στον/στην ${vendorName}. Θα επικοινωνήσουν μαζί σας σύντομα.`
       );
       form.reset();
+      setInterestedDateISOs([]);
     } catch (error) {
       setState("error");
       setMessage(
@@ -86,7 +138,7 @@ export function VendorContactForm({
       <div className="grid sm:grid-cols-2 gap-4">
         {/* Row 1: First name | Last name */}
         <label className="flex flex-col gap-2 text-sm text-charcoal">
-          Όνομα <span className="text-rose-500">*</span>
+          Όνομα
           <input
             name="firstName"
             required
@@ -96,7 +148,7 @@ export function VendorContactForm({
         </label>
 
         <label className="flex flex-col gap-2 text-sm text-charcoal">
-          Επώνυμο <span className="text-rose-500">*</span>
+          Επώνυμο
           <input
             name="lastName"
             required
@@ -107,7 +159,7 @@ export function VendorContactForm({
 
         {/* Row 2: Phone | Email */}
         <label className="flex flex-col gap-2 text-sm text-charcoal">
-          Κινητό <span className="text-rose-500">*</span>
+          Κινητό
           <input
             type="tel"
             name="phone"
@@ -118,7 +170,7 @@ export function VendorContactForm({
         </label>
 
         <label className="flex flex-col gap-2 text-sm text-charcoal">
-          Email <span className="text-rose-500">*</span>
+          Email
           <input
             type="email"
             name="email"
@@ -128,26 +180,24 @@ export function VendorContactForm({
           />
         </label>
 
-        {/* Row 3: Interested dates */}
-        <label className="sm:col-span-2 flex flex-col gap-2 text-sm text-charcoal">
-          Ημερομηνίες που με ενδιαφέρουν <span className="text-rose-500">*</span>
-          <textarea
-            name="interestedDates"
-            required
-            rows={2}
-            className={inputClass}
-            placeholder="π.χ. Ιούνιος 2026, Σεπτέμβριος 2026"
+        {/* Row 3: Interested dates — multi-select calendar */}
+        <div className="sm:col-span-2 flex flex-col gap-2 text-sm text-charcoal">
+          <span>Ημερομηνίες που με ενδιαφέρουν</span>
+          <MultiDatePicker
+            selected={interestedDateISOs}
+            onChange={setInterestedDateISOs}
           />
-        </label>
+        </div>
 
-        {/* Row 4: Guest count */}
+        {/* Row 4: Guest count — text + numeric keypad avoids browser number-input rounding/spinner issues */}
         <label className="sm:col-span-2 flex flex-col gap-2 text-sm text-charcoal">
-          Αριθμός καλεσμένων κατά προσέγγιση <span className="text-rose-500">*</span>
+          Αριθμός καλεσμένων κατά προσέγγιση
           <input
-            type="number"
+            type="text"
             name="guestCount"
             required
-            min={1}
+            inputMode="numeric"
+            autoComplete="off"
             className={inputClass}
             placeholder="150"
           />
@@ -155,7 +205,7 @@ export function VendorContactForm({
 
         {/* Row 5: Event type */}
         <label className="sm:col-span-2 flex flex-col gap-2 text-sm text-charcoal">
-          Ενδιαφέρομαι για: <span className="text-rose-500">*</span>
+          Ενδιαφέρομαι για:
           <select
             name="eventType"
             required
@@ -165,16 +215,17 @@ export function VendorContactForm({
             <option value="" disabled>
               Επιλέξτε τύπο εκδήλωσης
             </option>
-            <option value="wedding">Δεξίωση γάμου</option>
-            <option value="baptism">Βάπτιση</option>
-            <option value="christening">Χρίσμα</option>
-            <option value="other">Άλλο</option>
+            {EVENT_TYPE_OPTIONS.map((label) => (
+              <option key={label} value={label}>
+                {label}
+              </option>
+            ))}
           </select>
         </label>
 
         {/* Row 6: Budget */}
         <label className="sm:col-span-2 flex flex-col gap-2 text-sm text-charcoal">
-          Προϋπολογισμός δεξίωσης <span className="text-rose-500">*</span>
+          Προϋπολογισμός δεξίωσης
           <input
             type="number"
             name="budget"
@@ -188,8 +239,7 @@ export function VendorContactForm({
 
         {/* Row 7: Dream reception description */}
         <label className="sm:col-span-2 flex flex-col gap-2 text-sm text-charcoal">
-          Περιγράψτε μας με λίγες φράσεις πώς ονειρεύεστε τη δεξίωση σας{" "}
-          <span className="text-rose-500">*</span>
+          Περιγράψτε μας με λίγες φράσεις πώς ονειρεύεστε τη δεξίωση σας
           <textarea
             name="details"
             required
@@ -201,7 +251,7 @@ export function VendorContactForm({
 
         {/* Row 8: Other comments */}
         <label className="sm:col-span-2 flex flex-col gap-2 text-sm text-charcoal">
-          Άλλα σχόλια <span className="text-rose-500">*</span>
+          Άλλα σχόλια
           <textarea
             name="otherComments"
             required
