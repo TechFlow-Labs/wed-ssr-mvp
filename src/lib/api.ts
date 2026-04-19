@@ -38,6 +38,10 @@ export type ReservationGuestRequest = {
   details?: string | null;
   budget_per_reservation?: number | string | null;
   partner_id: string;
+  interested_dates?: string | null;
+  guest_count?: number | null;
+  event_type?: string | null;
+  other_comments?: string | null;
 };
 
 export type ReservationItemResponse = {
@@ -52,6 +56,10 @@ export type ReservationItemResponse = {
   event_date?: string | null;
   details?: string | null;
   budget_per_reservation?: string | null;
+  interested_dates?: string | null;
+  guest_count?: number | null;
+  event_type?: string | null;
+  other_comments?: string | null;
 };
 
 export async function fetchVendors(
