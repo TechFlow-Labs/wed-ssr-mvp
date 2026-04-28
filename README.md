@@ -34,6 +34,7 @@ npm run dev
 | `/shop` | Πλακίδια κατηγοριών |
 | `/shop/[category]` | Προϊόντα ανά κατηγορία (π.χ. `/shop/wedding-dresses`) |
 | `/vendors` | Κατάλογος προμηθευτών |
+| `/wikipedia` | Wikipedia για γάμους (οδηγοί και βασικά θέματα) |
 
 ## Δομή έργου
 

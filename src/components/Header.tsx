@@ -18,6 +18,12 @@ export function Header() {
             Αρχική
           </Link>
           <Link
+            href="/wikipedia"
+            className="text-sm font-medium text-charcoal/80 hover:text-charcoal transition-colors"
+          >
+            Wikipedia Γάμου
+          </Link>
+          <Link
             href="/shop"
             className="hidden text-sm font-medium text-charcoal/80 hover:text-charcoal transition-colors"
           >
