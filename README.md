@@ -24,7 +24,7 @@ npm install
 npm run dev
 ```
 
-Άνοιγμα [http://localhost:3000](http://localhost:3000).
+Άνοιγμα [http://localhost:3004](http://localhost:3004).
 
 ## Διαδρομές
 
@@ -66,14 +66,14 @@ npm start
 
 ## Docker
 
-Η εφαρμογή χτίζεται ως **production image** (Next.js `standalone`) και τρέχει στη θύρα **3000**.
+Η εφαρμογή χτίζεται ως **production image** (Next.js `standalone`) και τρέχει στη θύρα **3004**.
 
 ```bash
 # Εικόνα
 docker build -t wedding-planner .
 
 # Εκτέλεση (API στο host, πρόσβαση από browser στο localhost:8060)
-docker run --rm -p 3000:3000 \
+docker run --rm -p 3004:3004 \
   --add-host=host.docker.internal:host-gateway \
   -e API_INTERNAL_URL=http://host.docker.internal:8060 \
   -e NEXT_PUBLIC_API_URL=http://localhost:8060 \
@@ -87,7 +87,7 @@ docker compose up --build
 ```
 
 - **`API_INTERNAL_URL`** — χρησιμοποιείται μόνο από τον **Node server** (SSR, `fetch` στο container) για να φτάσει το API που τρέχει στο **host**. Το `localhost` μέσα στο container δεν είναι το μηχάνημά σας.
-- **`NEXT_PUBLIC_API_URL`** — διεύθυνση που βλέπει ο **browser** (π.χ. αιτήματα από τη φόρμα)· όταν ανοίγεις `http://localhost:3000`, συνήθως το API είναι `http://localhost:8060`.
+- **`NEXT_PUBLIC_API_URL`** — διεύθυνση που βλέπει ο **browser** (π.χ. αιτήματα από τη φόρμα)· όταν ανοίγεις `http://localhost:3004`, συνήθως το API είναι `http://localhost:8060`.
 
 Αν το API είναι άλλο container στο ίδιο compose, βάλε π.χ. `API_INTERNAL_URL=http://api:8060` (όνομα υπηρεσίας) και `NEXT_PUBLIC_API_URL` όπως πρέπει να το βλέπει ο χρήστης από έξω.
 
@@ -122,6 +122,6 @@ docker compose up --build
 
 5. **Παραγωγή:** ορίστε `NEXT_PUBLIC_API_URL` στη δημόσια URL του API (π.χ. `https://api.wedapp.gr`) ώστε ο browser και τα client bundles να χτυπάνε το σωστό host.
 
-Για δοκιμές χωρίς nginx, ξεσχολιάστε στο `docker-compose.yml` το `ports: "3000:3000"` της υπηρεσίας `web`.
+Για δοκιμές χωρίς nginx, ξεσχολιάστε στο `docker-compose.yml` το `ports: "3004:3004"` της υπηρεσίας `web`.
 
 **Σημείωση:** Τα αρχεία στο `nginx/templates/` χρησιμοποιούν `server_name wedapp.gr`. Για `www.wedapp.gr`, προσθέστε το στα `server_name`, στο `ssl_certificate` paths (αν χρησιμοποιείτε ξεχωριστό live directory) και στο `certonly` με επιπλέον `-d www.wedapp.gr`.

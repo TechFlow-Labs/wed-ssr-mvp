@@ -2,10 +2,10 @@ services:
   web:
     build: .
     expose:
-      - "3000"
+      - "3004"
     # Για δοκιμή χωρίς nginx: ξεσχολιάστε την επόμενη γραμμή
     # ports:
-    #   - "3000:3000"
+    #   - "3004:3004"
     extra_hosts:
       - "host.docker.internal:host-gateway"
     environment:
