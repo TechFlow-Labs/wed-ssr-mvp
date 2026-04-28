@@ -150,6 +150,52 @@ export default function HomePage() {
         </div>
       </section>
 
+      <section className="py-24 px-6 bg-rose-50/40 border-y border-rose-100/70">
+        <div className="max-w-6xl mx-auto">
+          <div className="text-center mb-14">
+            <p className="font-serif text-rose-700 text-sm tracking-[0.3em] uppercase mb-3">
+              Γαμήλιες στιγμές
+            </p>
+            <h2 className="font-display text-4xl md:text-5xl text-charcoal mb-4">
+              Ιδέες για μια αξέχαστη ημέρα
+            </h2>
+            <p className="text-charcoal/70 max-w-3xl mx-auto">
+              Ανακαλύψτε έμπνευση για τελετή, δεξίωση και προσωπικές πινελιές
+              που θα κάνουν τον γάμο σας μοναδικό.
+            </p>
+          </div>
+          <div className="grid md:grid-cols-3 gap-6">
+            <article className="rounded-2xl bg-white p-7 border border-rose-100/80">
+              <h3 className="font-display text-2xl text-charcoal mb-3">
+                Τελετή με χαρακτήρα
+              </h3>
+              <p className="text-charcoal/75 leading-relaxed">
+                Επιλέξτε μουσική εισόδου, διακόσμηση ανθοδέσμης και vows που
+                αντικατοπτρίζουν την ιστορία σας ως ζευγάρι.
+              </p>
+            </article>
+            <article className="rounded-2xl bg-white p-7 border border-rose-100/80">
+              <h3 className="font-display text-2xl text-charcoal mb-3">
+                Δεξίωση που ξεχωρίζει
+              </h3>
+              <p className="text-charcoal/75 leading-relaxed">
+                Δημιουργήστε θεματικά τραπέζια, φωτισμό ατμόσφαιρας και menu με
+                επιλογές που θα θυμούνται οι καλεσμένοι σας.
+              </p>
+            </article>
+            <article className="rounded-2xl bg-white p-7 border border-rose-100/80">
+              <h3 className="font-display text-2xl text-charcoal mb-3">
+                Αναμνήσεις για πάντα
+              </h3>
+              <p className="text-charcoal/75 leading-relaxed">
+                Σχεδιάστε photobooth γωνίες, guestbook εμπειρίες και timeline
+                στιγμών για αυθεντικές φωτογραφίες και βίντεο.
+              </p>
+            </article>
+          </div>
+        </div>
+      </section>
+
       <section className="py-24 px-6 bg-charcoal text-white">
         <div className="max-w-4xl mx-auto text-center">
           <h2 className="font-display text-4xl md:text-5xl mb-6">
