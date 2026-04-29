@@ -3,9 +3,6 @@ services:
     build: .
     expose:
       - "3005"
-    # Για δοκιμή χωρίς nginx: ξεσχολιάστε την επόμενη γραμμή
-    # ports:
-    #   - "3005:3005"
     extra_hosts:
       - "host.docker.internal:host-gateway"
     environment:
@@ -13,39 +10,19 @@ services:
       NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://localhost:8060}
     networks:
       - local_sandbox_2
+      - coolify
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.wed-ssr.rule=Host(`wedapp.gr`)"
+      - "traefik.http.routers.wed-ssr.entrypoints=https"
+      - "traefik.http.routers.wed-ssr.tls=true"
+      - "traefik.http.routers.wed-ssr.tls.certresolver=letsencrypt"
+      - "traefik.http.services.wed-ssr.loadbalancer.server.port=3005"
 
-  nginx:
-    build: ./nginx
-    environment:
-      WEDDING_API_NGINX_UPSTREAM: ${WEDDING_API_NGINX_UPSTREAM:-wedding-plan-nginx-prod:8050}
-    ports:
-      - "80:80"
-      - "443:443"
-    volumes:
-      - certbot-www:/var/www/certbot:ro
-      - certbot-conf:/etc/letsencrypt:ro
-    depends_on:
-      - web
-    networks:
-      - local_sandbox_2
-
-  certbot:
-    image: certbot/certbot:v2.11.0
-    volumes:
-      - certbot-www:/var/www/certbot
-      - certbot-conf:/etc/letsencrypt
-    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew || true; sleep 12h & wait $${!}; done;'"
-    networks:
-      - local_sandbox_2
-    depends_on:
-      - nginx
-
-volumes:
-  certbot-www:
-  certbot-conf:
-
-# Same bridge as wed-main-app / wed-backend (docker network create … local_sandbox_2)
 networks:
   local_sandbox_2:
     external: true
     name: local_sandbox_2
+  coolify:
+    external: true
+    name: coolify
