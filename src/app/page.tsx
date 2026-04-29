@@ -4,6 +4,90 @@ import Image from "next/image";
 const HERO_IMAGE =
   "https://images.unsplash.com/photo-1519741497674-611481863552?w=1920&q=80";
 
+const STATS = [
+  { value: "1.200+", label: "Ζευγάρια" },
+  { value: "350+", label: "Προμηθευτές" },
+  { value: "48", label: "Τοποθεσίες" },
+  { value: "4.9★", label: "Μέση βαθμολογία" },
+];
+
+const VENDORS = [
+  {
+    id: 1,
+    name: "Villa Rosea",
+    category: "Χώρος δεξίωσης",
+    location: "Σαντορίνη",
+    priceRange: "€€€",
+    rating: 4.9,
+    reviews: 128,
+    image:
+      "https://images.unsplash.com/photo-1519225421980-715cb0215aed?w=800&q=80",
+  },
+  {
+    id: 2,
+    name: "Bloom & Co.",
+    category: "Ανθοπωλείο",
+    location: "Αθήνα",
+    priceRange: "€€",
+    rating: 4.8,
+    reviews: 94,
+    image:
+      "https://images.unsplash.com/photo-1487530811015-780f382bb3d5?w=800&q=80",
+  },
+  {
+    id: 3,
+    name: "Moments Studio",
+    category: "Φωτογραφία & Βίντεο",
+    location: "Θεσσαλονίκη",
+    priceRange: "€€",
+    rating: 5.0,
+    reviews: 211,
+    image:
+      "https://images.unsplash.com/photo-1606800052052-a08af7148866?w=800&q=80",
+  },
+  {
+    id: 4,
+    name: "Dolce Vita Catering",
+    category: "Catering",
+    location: "Αθήνα",
+    priceRange: "€€€",
+    rating: 4.7,
+    reviews: 76,
+    image:
+      "https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=800&q=80",
+  },
+];
+
+const TESTIMONIALS = [
+  {
+    id: 1,
+    couple: "Μαρία & Νίκος",
+    date: "Σεπτέμβριος 2024",
+    location: "Μύκονος",
+    quote:
+      "Το wedapp έκανε τον σχεδιασμό του γάμου μας εύκολο και ευχάριστο. Βρήκαμε τον φωτογράφο, τον ανθοπωλείο και τον χώρο μέσα σε μια εβδομάδα!",
+    avatar: "https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?w=200&q=80",
+  },
+  {
+    id: 2,
+    couple: "Ελένη & Κώστας",
+    date: "Ιούνιος 2024",
+    location: "Αθήνα",
+    quote:
+      "Εντυπωσιαστήκαμε από την ποιότητα των προμηθευτών. Κάθε επιλογή ήταν επιμελημένη και οι αξιολογήσεις ήταν αξιόπιστες. Ο γάμος μας ήταν τέλειος.",
+    avatar: "https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?w=200&q=80",
+  },
+  {
+    id: 3,
+    couple: "Σοφία & Δημήτρης",
+    date: "Μάιος 2025",
+    location: "Σαντορίνη",
+    quote:
+      "Από την πρώτη στιγμή ένιωσα ότι έχω έναν οδηγό δίπλα μου. Τα εργαλεία σχεδιασμού με βοήθησαν να μην ξεχάσω τίποτα. Συνιστώ ανεπιφύλακτα!",
+    avatar: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=200&q=80",
+  },
+];
+
 export default function HomePage() {
   return (
     <main className="min-h-screen">
@@ -49,6 +133,18 @@ export default function HomePage() {
               Οι υπηρεσίες μας
             </Link>
           </div>
+        </div>
+      </section>
+
+      {/* Stats bar */}
+      <section className="bg-rose-700 py-10 px-6">
+        <div className="max-w-4xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-8 text-center text-white">
+          {STATS.map((s) => (
+            <div key={s.label}>
+              <p className="font-display text-3xl md:text-4xl mb-1">{s.value}</p>
+              <p className="text-rose-200 text-sm tracking-wide uppercase">{s.label}</p>
+            </div>
+          ))}
         </div>
       </section>
 
@@ -150,6 +246,66 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* Featured vendors */}
+      <section className="py-24 px-6 bg-stone-50 border-y border-stone-100">
+        <div className="max-w-6xl mx-auto">
+          <div className="flex items-end justify-between mb-12">
+            <div>
+              <p className="font-serif text-rose-700 text-sm tracking-[0.3em] uppercase mb-2">
+                Κορυφαίες επιλογές
+              </p>
+              <h2 className="font-display text-4xl md:text-5xl text-charcoal">
+                Προτεινόμενοι προμηθευτές
+              </h2>
+            </div>
+            <Link
+              href="/vendors"
+              className="hidden md:inline-block text-rose-600 font-medium hover:underline"
+            >
+              Όλοι οι προμηθευτές →
+            </Link>
+          </div>
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {VENDORS.map((v) => (
+              <div
+                key={v.id}
+                className="group bg-white rounded-2xl border border-stone-100 hover:border-rose-200 hover:shadow-lg transition-all overflow-hidden"
+              >
+                <div className="relative w-full aspect-[4/3] overflow-hidden">
+                  <Image
+                    src={v.image}
+                    alt={v.name}
+                    fill
+                    className="object-cover group-hover:scale-105 transition-transform duration-500"
+                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                  />
+                  <span className="absolute top-3 right-3 bg-white/95 text-charcoal text-xs font-medium px-2 py-1 rounded-full shadow">
+                    {v.priceRange}
+                  </span>
+                </div>
+                <div className="p-5">
+                  <p className="text-xs text-rose-600 font-medium uppercase tracking-wide mb-1">
+                    {v.category}
+                  </p>
+                  <h3 className="font-display text-lg text-charcoal mb-1">{v.name}</h3>
+                  <p className="text-charcoal/50 text-sm mb-3">{v.location}</p>
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-amber-400 text-sm">★</span>
+                    <span className="text-charcoal font-medium text-sm">{v.rating.toFixed(1)}</span>
+                    <span className="text-charcoal/40 text-sm">({v.reviews} κριτικές)</span>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+          <div className="mt-8 text-center md:hidden">
+            <Link href="/vendors" className="text-rose-600 font-medium hover:underline">
+              Όλοι οι προμηθευτές →
+            </Link>
+          </div>
+        </div>
+      </section>
+
       <section className="py-24 px-6 bg-rose-50/40 border-y border-rose-100/70">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-14">
@@ -192,6 +348,48 @@ export default function HomePage() {
                 στιγμών για αυθεντικές φωτογραφίες και βίντεο.
               </p>
             </article>
+          </div>
+        </div>
+      </section>
+
+      {/* Testimonials */}
+      <section className="py-24 px-6 bg-white">
+        <div className="max-w-6xl mx-auto">
+          <div className="text-center mb-14">
+            <p className="font-serif text-rose-700 text-sm tracking-[0.3em] uppercase mb-3">
+              Ιστορίες ζευγαριών
+            </p>
+            <h2 className="font-display text-4xl md:text-5xl text-charcoal mb-4">
+              Τι λένε οι ζευγάρια μας
+            </h2>
+          </div>
+          <div className="grid md:grid-cols-3 gap-8">
+            {TESTIMONIALS.map((t) => (
+              <div
+                key={t.id}
+                className="flex flex-col bg-rose-50/50 rounded-2xl border border-rose-100/60 p-8"
+              >
+                <p className="text-rose-400 text-3xl font-serif mb-4 leading-none">"</p>
+                <p className="text-charcoal/80 leading-relaxed flex-1 mb-6">{t.quote}</p>
+                <div className="flex items-center gap-4 pt-4 border-t border-rose-100">
+                  <div className="relative w-12 h-12 rounded-full overflow-hidden shrink-0">
+                    <Image
+                      src={t.avatar}
+                      alt={t.couple}
+                      fill
+                      className="object-cover"
+                      sizes="48px"
+                    />
+                  </div>
+                  <div>
+                    <p className="font-display text-charcoal">{t.couple}</p>
+                    <p className="text-charcoal/50 text-sm">
+                      {t.date} · {t.location}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       </section>
