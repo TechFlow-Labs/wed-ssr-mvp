@@ -1,0 +1,30 @@
+services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      NODE_ENV: production
+      API_INTERNAL_URL: ${BACKEND_PREVIEW_URL}
+    networks: [preview-internal]
+
+  nginx:
+    build:
+      context: ./nginx
+      dockerfile: Dockerfile
+    environment:
+      PREVIEW_MODE: "true"
+      WEDDING_API_NGINX_UPSTREAM: ${BACKEND_PREVIEW_URL}
+    depends_on: [web]
+    ports:
+      - "80"
+    networks:
+      - preview-internal
+      - traefik-public
+
+networks:
+  preview-internal:
+    driver: bridge
+  traefik-public:
+    external: true
+    name: ${TRAEFIK_NETWORK:-coolify}
