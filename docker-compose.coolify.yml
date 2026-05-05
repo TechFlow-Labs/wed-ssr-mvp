@@ -40,19 +40,23 @@ services:
 
   web:
     build:
-      context: .
+      # SSR_BRANCH is injected by the GitHub Actions workflow; defaults to main.
+      # The Coolify app always tracks wed-ssr-mvp:main for the compose file itself;
+      # the web image is built from the branch-specific SSR code via this URL.
+      context: https://x-access-token:${GITHUB_TOKEN}@github.com/TechFlow-Labs/wed-ssr-mvp.git#${SSR_BRANCH:-main}
       dockerfile: Dockerfile
     environment:
       NODE_ENV: production
       API_INTERNAL_URL: http://backend:8000
-      # NEXT_PUBLIC_API_URL intentionally absent: api.ts browser path falls back
-      # to window.location.origin/public-api, which nginx proxies to backend:8000
+      # NEXT_PUBLIC_API_URL left unset: browser calls fall back to
+      # window.location.origin/public-api, which nginx proxies to backend:8000
     depends_on: [backend]
     networks: [preview-internal]
 
   main:
     build:
       context: https://x-access-token:${GITHUB_TOKEN}@github.com/TechFlow-Labs/wed-main-mvp.git#${MAIN_BRANCH:-main}
+      dockerfile: Dockerfile
       args:
         EXPO_PUBLIC_API_URL: /api
     environment:
