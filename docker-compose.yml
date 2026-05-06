@@ -1,51 +1,30 @@
+# Coolify deployment for wed-ssr-mvp (Next.js SSR)
+# Set the following in Coolify environment variables:
+#   API_INTERNAL_URL    - backend URL for server-side fetches (SSR rewrites)
+#                         Production: https://api.yourdomain.com
+#                         Preview:    https://<preview-backend-fqdn>
+#   NEXT_PUBLIC_API_URL - backend URL embedded in client-side JS bundle
+#                         Same value as API_INTERNAL_URL in most cases
+#
+# Coolify generates SERVICE_FQDN_WEB_3000 from the FQDN you set in the UI.
+
 services:
   web:
     build: .
-    expose:
-      - "3000"
-    # Για δοκιμή χωρίς nginx: ξεσχολιάστε την επόμενη γραμμή
-    # ports:
-    #   - "3000:3000"
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
     environment:
-      API_INTERNAL_URL: ${API_INTERNAL_URL:-http://host.docker.internal:8060}
-      NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://localhost:8060}
+      - API_INTERNAL_URL=${API_INTERNAL_URL:-http://localhost:8000}
+      - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL:-http://localhost:8000}
     networks:
-      - local_sandbox_2
+      - coolify
+    labels:
+      - traefik.enable=true
+      - "traefik.http.routers.wed-ssr.rule=Host(`${SERVICE_FQDN_WEB_3000}`)"
+      - traefik.http.routers.wed-ssr.entrypoints=https
+      - traefik.http.routers.wed-ssr.tls=true
+      - traefik.http.routers.wed-ssr.tls.certresolver=letsencrypt
+      - traefik.http.services.wed-ssr.loadbalancer.server.port=3000
 
-  nginx:
-    build: ./nginx
-    environment:
-      WEDDING_API_NGINX_UPSTREAM: ${WEDDING_API_NGINX_UPSTREAM:-wedding-plan-nginx-prod:8050}
-    ports:
-      - "80:80"
-      - "443:443"
-    volumes:
-      - certbot-www:/var/www/certbot:ro
-      - certbot-conf:/etc/letsencrypt:ro
-    depends_on:
-      - web
-    networks:
-      - local_sandbox_2
-
-  certbot:
-    image: certbot/certbot:v2.11.0
-    volumes:
-      - certbot-www:/var/www/certbot
-      - certbot-conf:/etc/letsencrypt
-    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew || true; sleep 12h & wait $${!}; done;'"
-    networks:
-      - local_sandbox_2
-    depends_on:
-      - nginx
-
-volumes:
-  certbot-www:
-  certbot-conf:
-
-# Same bridge as wed-main-app / wed-backend (docker network create … local_sandbox_2)
 networks:
-  local_sandbox_2:
+  coolify:
     external: true
-    name: local_sandbox_2
+    name: coolify
