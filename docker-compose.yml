@@ -9,7 +9,6 @@ services:
       API_INTERNAL_URL: ${API_INTERNAL_URL:-http://host.docker.internal:8060}
       NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://localhost:8060}
     networks:
-      - local_sandbox_2
       - coolify
     labels:
       - "traefik.enable=true"
@@ -20,9 +19,6 @@ services:
       - "traefik.http.services.wed-ssr.loadbalancer.server.port=3005"
 
 networks:
-  local_sandbox_2:
-    external: true
-    name: local_sandbox_2
   coolify:
     external: true
     name: coolify
