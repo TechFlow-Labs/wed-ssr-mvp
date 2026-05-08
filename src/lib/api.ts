@@ -1,13 +1,11 @@
 const DEFAULT_API = "http://localhost:8060";
 
 /**
- * Browser: same-origin `/public-api` (nginx or Next rewrites → backend) so wedapp.gr never calls localhost:8060.
+ * Browser: always same-origin `/public-api` (Next rewrite/nginx → backend).
  * SSR: API_INTERNAL_URL / Docker network to the API container.
  */
 export function getApiBaseUrl(): string {
   if (typeof window !== "undefined") {
-    const explicit = process.env.NEXT_PUBLIC_API_URL?.replace(/\/$/, "");
-    if (explicit) return explicit;
     return `${window.location.origin}/public-api`;
   }
   return (
@@ -37,6 +35,10 @@ export type ReservationGuestRequest = {
   event_date?: string | null;
   details?: string | null;
   budget_per_reservation?: number | string | null;
+  interested_dates?: string | null;
+  guest_count?: number | null;
+  event_type?: string | null;
+  other_comments?: string | null;
   partner_id: string;
 };
 

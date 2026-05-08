@@ -72,11 +72,10 @@ npm start
 # Εικόνα
 docker build -t wedding-planner .
 
-# Εκτέλεση (API στο host, πρόσβαση από browser στο localhost:8060)
+# Εκτέλεση (API στο host, browser calls μέσω /public-api)
 docker run --rm -p 3005:3005 \
   --add-host=host.docker.internal:host-gateway \
   -e API_INTERNAL_URL=http://host.docker.internal:8060 \
-  -e NEXT_PUBLIC_API_URL=http://localhost:8060 \
   wedding-planner
 ```
 
@@ -86,10 +85,24 @@ docker run --rm -p 3005:3005 \
 docker compose up --build
 ```
 
-- **`API_INTERNAL_URL`** — χρησιμοποιείται μόνο από τον **Node server** (SSR, `fetch` στο container) για να φτάσει το API που τρέχει στο **host**. Το `localhost` μέσα στο container δεν είναι το μηχάνημά σας.
-- **`NEXT_PUBLIC_API_URL`** — διεύθυνση που βλέπει ο **browser** (π.χ. αιτήματα από τη φόρμα)· όταν ανοίγεις `http://localhost:3005`, συνήθως το API είναι `http://localhost:8060`.
+- **`API_INTERNAL_URL`** — χρησιμοποιείται από τον **Node server** (SSR) για να φτάσει το API. Σε Docker βάλε συνήθως `http://host.docker.internal:8060`, ενώ χωρίς Docker `http://localhost:8060`.
+- **Browser requests** — γίνονται πάντα σε **same-origin** path: `/public-api/...` και προωθούνται από Next rewrite στο backend target.
+- **`NEXT_PUBLIC_API_URL`** — προαιρετικό fallback για SSR μόνο (όχι για browser calls στο default setup).
 
-Αν το API είναι άλλο container στο ίδιο compose, βάλε π.χ. `API_INTERNAL_URL=http://api:8060` (όνομα υπηρεσίας) και `NEXT_PUBLIC_API_URL` όπως πρέπει να το βλέπει ο χρήστης από έξω.
+Αν το API είναι άλλο container στο ίδιο compose, βάλε π.χ. `API_INTERNAL_URL=http://api:8060` (όνομα υπηρεσίας).
+
+### API Routing Rule (same-origin proxy)
+
+Ο browser καλεί πάντα:
+
+- `/public-api/vendors/?limit=50&skip=0`
+- `/public-api/reservations/guest`
+
+Το Next.js rewrite (`next.config.js`) προωθεί τα αιτήματα στο:
+
+- `API_PROXY_TARGET` ή
+- `API_INTERNAL_URL` ή
+- `http://localhost:8060` (fallback)
 
 ### Nginx reverse proxy + SSL (wedapp.gr)
 
@@ -120,7 +133,12 @@ docker compose up --build
    docker compose exec nginx nginx -s reload
    ```
 
-5. **Παραγωγή:** ορίστε `NEXT_PUBLIC_API_URL` στη δημόσια URL του API (π.χ. `https://api.wedapp.gr`) ώστε ο browser και τα client bundles να χτυπάνε το σωστό host.
+5. **Παραγωγή:** ορίστε `API_INTERNAL_URL` στο εσωτερικό/upstream backend target πίσω από nginx (ή στο private API DNS που βλέπει ο Next server). Τα browser calls παραμένουν σε `/public-api`.
+
+### Σημείωση CORS
+
+Με same-origin proxy mode, τα browser calls περνάνε από το ίδιο origin και συνήθως δεν χρειάζονται πρόσθετες CORS αλλαγές.
+Αν γίνουν direct browser calls σε API domain, ενημερώστε το backend CORS allowlist (στο `wed-backend/src/app/app.py`) ώστε να περιλαμβάνει τουλάχιστον `http://localhost:3005` και τα production frontend domains.
 
 Για δοκιμές χωρίς nginx, ξεσχολιάστε στο `docker-compose.yml` το `ports: "3005:3005"` της υπηρεσίας `web`.
 
