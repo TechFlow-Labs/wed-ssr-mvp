@@ -1,6 +1,8 @@
 services:
   web:
     build: .
+    ports:
+      - "127.0.0.1:3005:3005"
     expose:
       - "3005"
     extra_hosts:
@@ -12,7 +14,7 @@ services:
       - coolify
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.wed-ssr.rule=Host(`wedapp.gr`)"
+      - "traefik.http.routers.wed-ssr.rule=Host(`wedapp.techflowlabs.gr`)"
       - "traefik.http.routers.wed-ssr.entrypoints=https"
       - "traefik.http.routers.wed-ssr.tls=true"
       - "traefik.http.routers.wed-ssr.tls.certresolver=letsencrypt"
