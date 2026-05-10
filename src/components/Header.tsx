@@ -24,6 +24,12 @@ export function Header() {
             Shop
           </Link>
           <Link
+            href="/gift-lists"
+            className="text-sm font-medium text-charcoal/80 hover:text-charcoal transition-colors"
+          >
+            Gift Lists
+          </Link>
+          <Link
             href="/vendors"
             className="text-sm font-medium text-charcoal/80 hover:text-charcoal transition-colors"
           >

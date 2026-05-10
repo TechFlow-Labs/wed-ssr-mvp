@@ -17,6 +17,15 @@ export function getApiBaseUrl(): string {
   );
 }
 
+function publicApiUrl(path: string): string {
+  const base = getApiBaseUrl();
+  const normalized = path.startsWith("/") ? path : `/${path}`;
+  if (base.endsWith("/public-api")) {
+    return `${base}${normalized}`;
+  }
+  return `${base}/public-api${normalized}`;
+}
+
 export type VendorPublic = {
   partner_id: string;
   business_name: string;
@@ -54,6 +63,34 @@ export type ReservationItemResponse = {
   budget_per_reservation?: string | null;
 };
 
+export type SpecialPartner = {
+  id: string;
+  name: string;
+  category: string;
+  city: string;
+  shortDescription: string;
+  badge: string;
+  featuredImage: string;
+  rating: number;
+};
+
+export type SpecialPartnersResponse = {
+  items: SpecialPartner[];
+};
+
+export type GiftListItem = {
+  id: string;
+  title: string;
+  description: string;
+  event_type: string;
+  gift_count: number;
+};
+
+export type GiftListsResponse = {
+  items: GiftListItem[];
+  total: number;
+};
+
 export async function fetchVendors(
   limit = 50,
   skip = 0
@@ -83,6 +120,30 @@ export async function createGuestReservation(
       error?.message ||
       "Αποτυχία δημιουργίας κράτησης"
     );
+  }
+
+  return res.json();
+}
+
+export async function fetchSpecialPartners(): Promise<SpecialPartnersResponse> {
+  const res = await fetch(publicApiUrl("/special-partners/"), {
+    cache: "no-store",
+  });
+
+  if (!res.ok) {
+    throw new Error("Αποτυχία φόρτωσης special partners");
+  }
+
+  return res.json();
+}
+
+export async function fetchGiftLists(): Promise<GiftListsResponse> {
+  const res = await fetch(publicApiUrl("/gift-lists/"), {
+    cache: "no-store",
+  });
+
+  if (!res.ok) {
+    throw new Error("Αποτυχία φόρτωσης λιστών δώρων");
   }
 
   return res.json();
