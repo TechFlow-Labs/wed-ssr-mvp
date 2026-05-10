@@ -73,7 +73,7 @@ export async function fetchVendors(
   limit = 50,
   skip = 0
 ): Promise<VendorListResponse> {
-  const url = new URL(`${getApiBaseUrl()}/vendors/`);
+  const url = new URL(`${getApiBaseUrl()}/public-api/vendors/`);
   url.searchParams.set("limit", String(limit));
   url.searchParams.set("skip", String(skip));
 
