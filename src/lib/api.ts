@@ -17,11 +17,30 @@ export function getApiBaseUrl(): string {
   );
 }
 
+function joinApiPath(base: string, path: string): string {
+  return `${base.replace(/\/+$/, "")}/${path.replace(/^\/+/, "")}`;
+}
+
 export type VendorPublic = {
   partner_id: string;
   business_name: string;
   category: string | null;
   description: string | null;
+};
+
+export type GiftItem = {
+  id: string;
+  item_name: string;
+  category: string | null;
+  short_description: string | null;
+  long_description: string | null;
+  main_image_url: string | null;
+  gallery_image_urls: string[];
+};
+
+export type GiftListResponse = {
+  total: number;
+  items: GiftItem[];
 };
 
 export type VendorListResponse = {
@@ -58,7 +77,7 @@ export async function fetchVendors(
   limit = 50,
   skip = 0
 ): Promise<VendorListResponse> {
-  const url = new URL(`${getApiBaseUrl()}/vendors/`);
+  const url = new URL(joinApiPath(getApiBaseUrl(), "/vendors/"));
   url.searchParams.set("limit", String(limit));
   url.searchParams.set("skip", String(skip));
 
@@ -70,7 +89,7 @@ export async function fetchVendors(
 export async function createGuestReservation(
   data: ReservationGuestRequest
 ): Promise<ReservationItemResponse> {
-  const res = await fetch(`${getApiBaseUrl()}/reservations/guest`, {
+  const res = await fetch(joinApiPath(getApiBaseUrl(), "/reservations/guest"), {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(data),
@@ -85,5 +104,13 @@ export async function createGuestReservation(
     );
   }
 
+  return res.json();
+}
+
+export async function fetchGiftLists(): Promise<GiftListResponse> {
+  const res = await fetch(joinApiPath(getApiBaseUrl(), "/gifts/lists"), {
+    cache: "no-store",
+  });
+  if (!res.ok) throw new Error("Αποτυχία φόρτωσης λίστας δώρων");
   return res.json();
 }
