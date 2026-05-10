@@ -34,6 +34,7 @@ npm run dev
 | `/shop` | Πλακίδια κατηγοριών |
 | `/shop/[category]` | Προϊόντα ανά κατηγορία (π.χ. `/shop/wedding-dresses`) |
 | `/vendors` | Κατάλογος προμηθευτών |
+| `/special-partners` | Κατάλογος Special Partners |
 
 ## Δομή έργου
 
@@ -125,3 +126,14 @@ docker compose up --build
 Για δοκιμές χωρίς nginx, ξεσχολιάστε στο `docker-compose.yml` το `ports: "3000:3000"` της υπηρεσίας `web`.
 
 **Σημείωση:** Τα αρχεία στο `nginx/templates/` χρησιμοποιούν `server_name wedapp.gr`. Για `www.wedapp.gr`, προσθέστε το στα `server_name`, στο `ssl_certificate` paths (αν χρησιμοποιείτε ξεχωριστό live directory) και στο `certonly` με επιπλέον `-d www.wedapp.gr`.
+
+## Special Partners feature
+
+- Προστέθηκε σελίδα SSR: `/special-partners`.
+- Η σελίδα καλεί endpoint backend: `GET /public-api/special-partners/`.
+- Contract:
+  - `items: Array<{ id, name, category, city, shortDescription, badge, featuredImage, rating }>`
+- Local test:
+  - `npm run dev`, άνοιγμα `http://localhost:3000/special-partners`.
+- Expected PR preview URL:
+  - `https://ssr-feature-special-partners-page.preview.techflowlabs.gr`

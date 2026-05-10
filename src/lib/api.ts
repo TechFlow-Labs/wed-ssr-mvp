@@ -54,6 +54,21 @@ export type ReservationItemResponse = {
   budget_per_reservation?: string | null;
 };
 
+export type SpecialPartner = {
+  id: string;
+  name: string;
+  category: string;
+  city: string;
+  shortDescription: string;
+  badge: string;
+  featuredImage: string;
+  rating: number;
+};
+
+export type SpecialPartnersResponse = {
+  items: SpecialPartner[];
+};
+
 export async function fetchVendors(
   limit = 50,
   skip = 0
@@ -83,6 +98,18 @@ export async function createGuestReservation(
       error?.message ||
       "Αποτυχία δημιουργίας κράτησης"
     );
+  }
+
+  return res.json();
+}
+
+export async function fetchSpecialPartners(): Promise<SpecialPartnersResponse> {
+  const res = await fetch(`${getApiBaseUrl()}/public-api/special-partners/`, {
+    cache: "no-store",
+  });
+
+  if (!res.ok) {
+    throw new Error("Αποτυχία φόρτωσης special partners");
   }
 
   return res.json();
