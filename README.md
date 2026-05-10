@@ -137,3 +137,5 @@ docker compose up --build
   - `npm run dev`, άνοιγμα `http://localhost:3000/special-partners`.
 - Expected PR preview URL:
   - `https://ssr-feature-special-partners-page.preview.techflowlabs.gr`
+
+- Chore: documentation note added for branch-aligned preview deploy checks.
