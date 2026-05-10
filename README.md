@@ -139,3 +139,5 @@ docker compose up --build
   - `https://ssr-feature-special-partners-page.preview.techflowlabs.gr`
 
 - Chore: documentation note added for branch-aligned preview deploy checks.
+
+- PR retrigger note: 2026-05-10 20:37 EEST
