@@ -11,8 +11,8 @@ export function getApiBaseUrl(): string {
     return `${window.location.origin}/public-api`;
   }
   return (
-    process.env.API_INTERNAL_URL?.replace(/\/$/, "") ||
     process.env.NEXT_PUBLIC_API_URL?.replace(/\/$/, "") ||
+    process.env.API_INTERNAL_URL?.replace(/\/$/, "") ||
     DEFAULT_API
   );
 }
