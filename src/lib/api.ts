@@ -78,8 +78,25 @@ export async function fetchVendors(
   url.searchParams.set("skip", String(skip));
 
   const res = await fetch(url.toString(), { cache: "no-store" });
-  if (!res.ok) throw new Error("Αποτυχία φόρτωσης προμηθευτών");
-  return res.json();
+  if (res.ok) return res.json();
+
+  // Fallback for preview environments where /vendors may be temporarily unavailable.
+  const partnersRes = await fetch(
+    `${getApiBaseUrl()}/public-api/special-partners/`,
+    { cache: "no-store" }
+  );
+  if (partnersRes.ok) {
+    const partners = (await partnersRes.json()) as SpecialPartnersResponse;
+    const items: VendorPublic[] = partners.items.map((p) => ({
+      partner_id: p.id,
+      business_name: p.name,
+      category: p.category,
+      description: p.shortDescription,
+    }));
+    return { total: items.length, items };
+  }
+
+  throw new Error("Αποτυχία φόρτωσης προμηθευτών");
 }
 
 export async function createGuestReservation(
