@@ -110,25 +110,85 @@ export type WeddingWebsiteResponse = WeddingWebsitePayload & {
   updated_at: string;
 };
 
+function parseJsonErrorBody(status: number, body: string): string {
+  try {
+    const parsed = JSON.parse(body) as {
+      detail?: string | { msg?: string }[];
+    };
+    if (typeof parsed.detail === "string") return parsed.detail;
+    if (Array.isArray(parsed.detail) && parsed.detail[0]?.msg) {
+      return parsed.detail.map((d) => d.msg).join(", ");
+    }
+  } catch {
+    /* ignore */
+  }
+  return `Request failed (${status})`;
+}
+
 export async function generateWeddingWebsite(payload: WeddingWebsitePayload): Promise<WeddingWebsiteResponse> {
-  const res = await fetch(`${getApiBaseUrl()}/websites/generate`, {
+  const base = getApiBaseUrl().replace(/\/+$/, "");
+  const res = await fetch(`${base}/websites/generate`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
+  const text = await res.text();
+  if (!res.ok) {
+    throw new Error(parseJsonErrorBody(res.status, text));
+  }
+  return JSON.parse(text) as WeddingWebsiteResponse;
+}
+
+export async function fetchWeddingWebsite(slug: string): Promise<WeddingWebsiteResponse> {
+  const safeSlug = encodeURIComponent(slug.replace(/^\/+|\/+$/g, ""));
+  const base = getApiBaseUrl().replace(/\/+$/, "");
+  const res = await fetch(`${base}/websites/${safeSlug}`, { cache: "no-store" });
+  const text = await res.text();
+  if (!res.ok) {
+    throw new Error(
+      res.status === 404
+        ? "404"
+        : parseJsonErrorBody(res.status, text)
+    );
+  }
+  return JSON.parse(text) as WeddingWebsiteResponse;
+}
+
+export type WeddingRsvpPayload = {
+  guest_name: string;
+  email: string;
+  attending: boolean;
+  guest_count: number;
+  notes?: string | null;
+};
+
+export type WeddingRsvpResponse = {
+  id: string;
+  message: string;
+};
+
+export async function submitWeddingRsvp(
+  slug: string,
+  payload: WeddingRsvpPayload
+): Promise<WeddingRsvpResponse> {
+  const safeSlug = encodeURIComponent(slug.replace(/^\/+|\/+$/g, ""));
+  const base = getApiBaseUrl().replace(/\/+$/, "");
+  const res = await fetch(`${base}/websites/${safeSlug}/rsvp`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(payload),
   });
   if (!res.ok) {
-    const error = await res.text();
-    throw new Error(`Generate failed (${res.status}): ${error}`);
-  }
-  return res.json();
-}
-
-export async function fetchWeddingWebsite(slug: string): Promise<WeddingWebsiteResponse> {
-  const safeSlug = slug.replace(/^\/+|\/+$/g, "");
-  const res = await fetch(`${getApiBaseUrl()}/websites/${safeSlug}`, { cache: "no-store" });
-  if (!res.ok) {
-    const error = await res.text();
-    throw new Error(`Fetch failed (${res.status}): ${error}`);
+    let msg = `RSVP failed (${res.status})`;
+    try {
+      const err = await res.json();
+      if (typeof err?.detail === "string") msg = err.detail;
+      else if (Array.isArray(err?.detail) && err.detail[0]?.msg)
+        msg = err.detail[0].msg;
+    } catch {
+      /* ignore */
+    }
+    throw new Error(msg);
   }
   return res.json();
 }
