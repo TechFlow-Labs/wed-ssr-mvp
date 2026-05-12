@@ -127,10 +127,10 @@ export default function HomePage() {
               Νυφική συλλογή
             </Link>
             <Link
-              href="#services"
+              href="/website-generator"
               className="px-8 py-4 border-2 border-white/80 text-white rounded-full font-medium hover:bg-white/10 hover:border-white transition-colors"
             >
-              Οι υπηρεσίες μας
+              Δημιουργία site
             </Link>
           </div>
         </div>
