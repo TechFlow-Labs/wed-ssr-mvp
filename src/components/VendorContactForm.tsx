@@ -131,9 +131,12 @@ export function VendorContactForm({
             name="budget"
             min={0}
             step={100}
-            className="rounded-lg border border-charcoal/20 bg-ivory px-3 py-2 outline-none focus:border-rose-500"
+            className="rounded-lg border border-rose-400 bg-rose-50 px-3 py-2 outline-none focus:border-rose-500"
             placeholder="15000"
           />
+          <span className="text-xs text-charcoal/60 leading-relaxed">
+            Μόλις επιβεβαιωθεί η κράτηση, το ποσό αυτό θα προστεθεί αυτόματα στον προϋπολογισμό σας στην εφαρμογή Wed.
+          </span>
         </label>
 
         <label className="sm:col-span-2 flex flex-col gap-2 text-sm text-charcoal">
